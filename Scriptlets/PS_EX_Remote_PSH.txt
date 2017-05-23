@@ -1,0 +1,10 @@
+Import-PSSession $(New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://exchh5.matc.madison.login/PowerShell/)
+
+
+$psISE.CurrentPowerShellTab.AddOnsMenu.SubMenus.add(
+  "Connect to Exchange",
+    {
+    Import-PSSession $(New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://exchh5.matc.madison.login/PowerShell/)
+    },
+  "Control+Alt+Z"
+)

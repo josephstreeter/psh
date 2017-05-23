@@ -1,0 +1,6 @@
+# List all eduPerson and wiscEdu attributes in schema:
+Get-ADObject -SearchBase "CN=Schema,CN=Configuration,$((get-addomain).distinguishedname" -pr * -f {(name -like "edu*") -or (name -like "wiscEdu*")} | select cn, searchflags, admindescription, created
+
+# List all schema attributes that are indexed (searchFlag=1) or indexed and have ANR enabled (searchFlag=5):
+Get-ADObject -SearchBase "CN=Schema,CN=Configuration,$((get-addomain).distinguishedname" -pr * -f {(searchflags -like "1") -or (searchflags -like "5")} | select cn, admindescription, created, searchflags
+

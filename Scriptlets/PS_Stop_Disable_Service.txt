@@ -1,0 +1,1 @@
+Get-Service -comp pulsar,magnetar,quasar ntds,dns | Stop-Service -force -PassThru | Set-Service -StartupType disabled

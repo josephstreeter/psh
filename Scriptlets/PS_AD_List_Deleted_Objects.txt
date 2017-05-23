@@ -1,0 +1,1 @@
+Get-ADObject -f {IsDeleted -eq $true} -IncludeDeletedObjects

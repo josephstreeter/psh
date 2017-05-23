@@ -1,0 +1,12 @@
+$acl = Get-Acl -Path "AD:\CN=John Q. Public,OU=Users,OU=TEST,OU=Lab,DC=ad,DC=wisc,DC=edu"
+$user = Get-ADUser "CN=John Q. Public,OU=Users,OU=TEST,OU=Lab,DC=ad,DC=wisc,DC=edu"
+$p = New-Object System.Security.Principal.SecurityIdentifier $user.SID
+
+$ace = New-Object System.DirectoryServices.ActiveDirectoryAccessRule $p, "mail", "deny"
+$acl.AddAccessRule($ace)
+Set-Acl -ACLObject $acl -Path ("AD:\" + $user.distinguishedName)
+
+
+With Quest AD Module
+
+Add-QADPermission "john q. public" -Account "authenticated users" -Rights ReadProperty -Property ('mail','sn','givenName','Initials') -ApplyTo ThisObjectOnly

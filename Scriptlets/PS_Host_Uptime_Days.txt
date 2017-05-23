@@ -1,0 +1,1 @@
+$os = Get-WmiObject -class win32_OperatingSystem -cn Pulsar.ad.wisc.edu; ((get-date) - $os.converttodatetime($os.lastbootuptime)).days

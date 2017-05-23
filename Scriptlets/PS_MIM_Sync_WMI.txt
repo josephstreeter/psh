@@ -1,0 +1,11 @@
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms698312(v=vs.100).aspx
+
+Get-WmiObject -Class 'MIIS_CSObject' -Namespace 'root\MicrosoftIdentityIntegrationServer'
+Get-WmiObject -Class 'MIIS_PasswordChangeSource' -Namespace 'root\MicrosoftIdentityIntegrationServer'
+Get-WmiObject -Class 'MIIS_PasswordChangeHistoryTarget' -Namespace 'root\MicrosoftIdentityIntegrationServer'
+Get-WmiObject -Class 'MIIS_PasswordChangeQueue' -Namespace 'root\MicrosoftIdentityIntegrationServer'
+
+Get-WmiObject -class "MIIS_ManagementAgent" -namespace "root\MicrosoftIdentityIntegrationServer"` -computername "." 
+Get-WmiObject -Class 'MIIS_RunHistory' -Namespace 'root\MicrosoftIdentityIntegrationServer'
+Get-WmiObject -Class 'MIIS_Server' -Namespace 'root\MicrosoftIdentityIntegrationServer'
+Get-WmiObject -Class 'MIIS_RunHistory' -Namespace 'root\MicrosoftIdentityIntegrationServer'

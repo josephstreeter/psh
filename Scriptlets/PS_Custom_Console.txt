@@ -1,0 +1,15 @@
+$a = (Get-Host).UI.RawUI
+$b = $a.WindowSize
+$b.Width = 235
+$b.Height = 68
+$a.WindowSize = $b
+
+http://technet.microsoft.com/en-us/library/ee156814.aspx
+
+ForegroundColor       : DarkYellow
+BackgroundColor       : DarkMagenta
+BufferSize            : 235,3000
+WindowSize            : 235,68
+MaxWindowSize         : 235,73
+MaxPhysicalWindowSize : 240,73
+KeyAvailable          : False

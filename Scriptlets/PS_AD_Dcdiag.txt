@@ -1,0 +1,6 @@
+Function Get-Diag($DC) {
+$tests = (dcdiag /v /s:$DC /skip:systemlog)
+foreach ($test in $tests) {if (($test -like "*failed test*") -or ($test -like "*Passed test*")) {$test.tostring().replace(".","").trim()}}
+}
+
+foreach ($DC in $(Get-ADDomainController -filter * | select -ExpandProperty name)) {Get-Diag($DC)}

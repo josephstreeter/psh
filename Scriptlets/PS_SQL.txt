@@ -1,0 +1,67 @@
+ Function Query-SQL($Value)
+    {
+    $dataSource = "server.domain.tld\instance"
+    $SQLuser = "user"
+    $SQLpwd = "password"
+    $database = "database"
+
+    $connection = New-Object System.Data.SqlClient.SqlConnection
+    $connectionString = "Server=$dataSource;uid=$SQLuser;pwd=$SQLpwd;Database=$database;Integrated Security=False;"
+    $connection.ConnectionString = $connectionString
+    $connection.Open()
+
+    $query = "SELECT * FROM Table WHERE column = '$Value'"
+    
+    $command = $connection.CreateCommand()
+    $command.CommandText = $query
+    $result = $command.ExecuteReader()
+    $SQLTable = new-object "System.Data.DataTable"
+    $SQLTable.Load($result)
+    $connection.Close()
+
+    Return $SQLTable
+    }
+
+
+###########################################################################################
+
+Function Query-SQL($Query)
+    {
+    $dataSource = "server.domain.tld\instance"
+    $SQLuser = "user"
+    $SQLpwd = "password"
+    $database = "database"
+
+    $connection = New-Object System.Data.SqlClient.SqlConnection
+    $connectionString = "Server=$dataSource;uid=$SQLuser;pwd=$SQLpwd;Database=$database;Integrated Security=true;"
+    $connection.ConnectionString = $connectionString
+    $connection.Open()
+    
+    $command = $connection.CreateCommand()
+    $command.CommandText = $query
+    $result = $command.ExecuteReader()
+    $SQLTable = new-object "System.Data.DataTable"
+    $SQLTable.Load($result)
+    $connection.Close()
+
+    Return $SQLTable
+    }
+
+$Attrib = "accountName"
+$Value = "GLEVIN"
+
+Query-SQL "SELECT * FROM Identities WHERE $Attrib = '$Value'"
+
+#######################################################################################################
+
+Function Query_SQL($Value)
+    {
+    $Instance = "server.domain.tld\instance"
+    $DataBase = "database"
+    $Query = "SELECT * FROM Table WHERE Column = '$Value'"
+    $Result=Invoke-Sqlcmd `
+        -ServerInstance $Instance `
+        -Database $DataBase `
+        -query $Query
+    Return $Result
+    }

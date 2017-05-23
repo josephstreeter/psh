@@ -1,0 +1,3 @@
+(Get-ADUser -f * -searchbase "ou=users,ou=sensitive objects,ou=ent,dc=ad,dc=wisc,dc=edu").name.replace("-ad","") | get-aduser
+
+(Get-ADUser -f * -searchbase "ou=users,ou=dept admin,ou=ent,dc=ad,dc=wisc,dc=edu").name.replace("-ou","") | get-aduser -ea silentlycontinue

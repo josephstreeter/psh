@@ -1,0 +1,29 @@
+$links=Invoke-WebRequest http://www.espn.com/nfl/players
+$Teams=($links.links | ? {$_.href -like "/nfl/team/roster/_/name/*"}).href
+
+$d=@()
+foreach ($team in $teams)
+    {
+    $a=Invoke-WebRequest "http://www.espn.com$($team)"
+    $c=@()
+    foreach ($b in ($a.AllElements | ? {($_.class -like "oddrow*") -or ($_.class -like "evenrow*")} ))
+        { 
+        $b=$b.innerHTML -replace "`n|`r"
+        $b=$b.replace("</TD><TD>",",").replace("<TD>","").replace("</TD>",",")
+        $b=$b.split(",")
+    
+        $c+=New-Object PSObject -Property @{
+                                            "TEAM"=$($team.split("/")[6].toupper())
+                                            "NO"=$b[0]
+                                            "NAME"=$b[1].split(">")[1].replace("</A","")
+                                            "POS"=$b[2]
+                                            "AGE"=$b[3]
+                                            "HT"=$b[4]
+                                            "WT"=$b[5]
+                                            "EXP"=$b[6]
+                                            "COLLEGE"=$b[7]
+                                            }
+        }
+    $d+=$c | select team,no,name,pos,age,ht,wt,exp,college
+    }
+$d | select team,no,name,pos,age,ht,wt,exp,college | ft -AutoSize | out-file .\nflroster.txt

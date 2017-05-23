@@ -1,0 +1,92 @@
+Configure and connect to workgroup or untrusted domain hosts
+############################################################
+
+Configure clinet trusted hosts
+##############################
+# http://winintro.ru/windowspowershell2corehelp.en/html/f23b65e2-c608-485d-95f5-a8c20e00f1fc.htm#seealsonotoggle
+set-item wsman:\localhost\Client\TrustedHosts -value *
+set-item wsman:\localhost\Client\TrustedHosts *.fabrikam.com
+set-item wsman:\localhost\Client\TrustedHosts -value <ComputerName>[,<ComputerName>]
+set-item wsman:\localhost\Client\TrustedHosts -value Server01.Domain01.Fabrikam.com
+
+$curValue = (get-item wsman:\localhost\Client\TrustedHosts).value
+set-item wsman:\localhost\Client\TrustedHosts -value "$curValue, Server01.Domain01.Fabrikam.com"
+
+Configure Authentication
+########################
+winrm set winrm/config/service/auth @{Negotiate="true"}
+winrm set winrm/config/service/auth @{Digest="false"}
+winrm set winrm/config/service/auth @{Kerberos="true"}
+
+Connect to Host
+###############
+Enter-PSSession <ComputerName> -Authentication negotiate -Credential (get-credential <domain>\<user>)
+
+
+Configure WinRM Service
+#######################
+
+Configure (Cert installed)
+##########################
+$DNSName = $(Get-WmiObject -class win32_computersystem).name + "." + $(Get-WmiObject -class win32_computersystem).domain
+$cert = (Get-childItem -Path Cert:\LocalMachine\my | ? {$_.Subject -match $DNSName}).thumbprint
+If ($cert)
+    {
+    $Config = '@{Hostname="' + $DNSName + '";CertificateThumbprint="' + $cert + '"}'
+    winrm create winrm/config/listener?Address=*+TransPort=HTTPS $Config
+    }
+    Else
+    {
+    "No Cert"
+    }
+
+$OS = (Get-WmiObject Win32_OperatingSystem).caption
+
+If ($OS -match "2012") 
+	{
+	If (-Not(get-netfirewallrule "Windows Remote Management (HTTPS-In)")) {
+	    New-NetFirewallRule -DisplayName "Windows Remote Management (HTTPS-In)" -Name "Windows Remote Management (HTTPS-In)" -Profile Any -LocalPort 5986 -Protocol TCP
+    	    }
+	}
+	Else
+	{
+	netsh advfirewall firewall add rule name="Windows Remote Management (HTTPS-In)" dir=in remoteport=5986 protocol=TCP action=allow
+	}
+
+
+
+
+Configure (Create self-signed cert)
+###################################
+If ((Get-Service WinRM).status -eq "Stopped") {Start-Service WinRM}
+
+$DNSName = $(Get-WmiObject -class win32_computersystem).name + "." + $(Get-WmiObject -class win32_computersystem).domain
+$Name = $(Get-WmiObject -class win32_computersystem).name
+
+$cert = New-SelfSignedCertificate -DnsName $ENV:COMPUTERNAME, "$env:COMPUTERNAME.$env:USERDNSDOMAIN".ToLower() -CertStoreLocation Cert:\LocalMachine\My
+$Config = '@{Hostname="' + $ENV:COMPUTERNAME + '";CertificateThumbprint="' + $cert.Thumbprint + '"}'
+winrm create winrm/config/listener?Address=*+TransPort=HTTPS $Config
+
+$OS = (Get-WmiObject Win32_OperatingSystem).caption
+
+If ($OS -match "2012") 
+	{
+	If (-Not(get-netfirewallrule "Windows Remote Management (HTTPS-In)")) {
+	    New-NetFirewallRule -DisplayName "Windows Remote Management (HTTPS-In)" -Name "Windows Remote Management (HTTPS-In)" -Profile Any -LocalPort 5986 -Protocol TCP
+    	    }
+	}
+	Else
+	{
+	netsh advfirewall firewall add rule name="Windows Remote Management (HTTPS-In)" dir=in remoteport=5986 protocol=TCP action=allow
+	}
+
+
+
+
+
+
+Execute remote commands
+#######################
+Invoke-Command -comp $((Get-ADComputer -f * -searchbase "ou=domain controllers,dc=ad,dc=wisc,dc=edu").dnshostname) -ScriptBlock {gpupdate /target:computer /force} -UseSSL
+
+Invoke-Command -comp $((Get-ADComputer -f * -searchbase "ou=domain controllers,dc=ad,dc=wisc,dc=edu").dnshostname) -ScriptBlock {Enable-PSremoting –Force} -UseSSL

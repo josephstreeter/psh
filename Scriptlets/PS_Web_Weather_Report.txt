@@ -1,0 +1,49 @@
+CLS
+$a = (Invoke-WebRequest "http://api.openweathermap.org/data/2.5/weather?zip=53932,us&units=imperial&appid=ca6e9687d1f0760c1a2ca01c5d7d7f52").content | ConvertFrom-Json
+
+"Current weather for " + $a.name + " (Lat: " + $a.coord.lat + " Lon: " + $a.coord.lon + ")`n"
+"Description:  " + $a.weather.description
+"Temp:         " + $a.main.temp + " F"
+"High Temp:    " + $a.main.temp_max + " F"
+"Low Temp:     " + $a.main.temp_min + " F"
+"Humidity      " + $a.main.humidity + "%"
+"Pressure      " + $a.main.pressure
+"Wind Speed:   " + $a.wind.speed + " Mph"
+"Wind Dir:     " + $a.wind.deg
+
+
+$b = (Invoke-WebRequest "http://api.openweathermap.org/data/2.5/forecast?zip=53932,us&units=imperial&appid=ca6e9687d1f0760c1a2ca01c5d7d7f52").content | ConvertFrom-Json
+$PropArray = @()
+foreach ($day in $b.list)
+    {
+    $PropArray += New-object PSObject -Property @{
+        "Day" = ($day.dt_txt).Split(" ")[0]
+        "Time" = ($day.dt_txt).Split(" ")[1]
+        "Main" = $day.weather.main
+        "Desc" = $day.weather.description
+        "Icon" = $day.weather.icon
+        "Humidity" = $day.main.humidity
+        "Temp" = $day.main.temp
+        "Max" = $day.main.temp_max
+        "Min" = $day.main.temp_min
+        "Clouds" = $day.clouds.all
+        "Wind_Dir" = $day.wind.deg
+        "Wind_Spd" = $day.wind.speed
+        "Rain" = $day.rain
+        }
+    }
+$Groups = $PropArray | group day
+
+"`nThe 3-Day Forcast  for " + $a.name + " (Lat: " + $a.coord.lat + " Lon: " + $a.coord.lon + ")`n"
+
+foreach ($Group in $Groups | select -First 3)
+    {
+    "-------" + $Group.name + "-------`n" 
+    foreach ($Day in $group.name)
+        {
+        foreach ($Time in $($Group | ? {$group.name -eq $Day}))
+            {
+            $Time.group | ft Time,Temp,Humidity,Wind_Dir,Wind_Spd,Clouds,Rain,Desc,Main -AutoSize
+            }
+        }
+    }

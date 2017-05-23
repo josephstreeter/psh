@@ -1,0 +1,6 @@
+
+Set the mail attrib to <NetID>@mail.wisc.edu
+get-aduser -f * -pr mail -searchbase "ou=users,ou=netid,ou=id,dc=ds,dc=wisc,dc=edu" | %{$newmail = $_.samaccountname + "@mail.wisc.edu"; set-aduser $_.samaccountname -emailaddress $NewMail}
+
+Set the mail attrib to blank
+get-aduser -f * -pr mail -searchbase "ou=users,ou=netid,ou=id,dc=ds,dc=wisc,dc=edu" | %{set-aduser $_.samaccountname -emailaddress $NULL}

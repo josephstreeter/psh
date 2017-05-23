@@ -1,0 +1,15 @@
+$strDNSServers = "128.104.254.254","144.92.254.254"
+$strDNSName = "ad.doit.wisc.edu"
+
+
+foreach ($objComp in $Args){
+    $strServerName = $objComp.properties.cn
+    $strNICs = Get-WMIObject Win32_NetworkAdapterConfiguration`
+       -computername $strServerName | where{$_.IPEnabled -eq “TRUE”}
+
+    Foreach($strNIC in $strNICs) {
+        $strNIC.SetDNSServerSearchOrder()
+        $strNIC.SetDNSServerSearchOrder($strDNSServers)
+        $strNIC.SetDNSDomain($strDNSName)
+        }
+}

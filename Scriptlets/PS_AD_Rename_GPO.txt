@@ -1,0 +1,1 @@
+Get-GPO -All | ?{$_.DisplayName -like "cd-*"} | %{ Rename-GPO -name $_.displayname -TargetName $_.displayname.replace("cd-","CSD-")}

@@ -1,0 +1,11 @@
+#Create the encoded script block
+
+$string = {Get-ADGroupMember "domain admins" -Recursive | Get-ADUser -pr * | select name,description,lastlogondate | sort}
+[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($string))
+
+
+#Run the encoded script block
+powershell.exe `
+    -NonInteractive `
+    -ExecutionPolicy Bypass `
+    -EncodedCommand RwBlAHQALQBBAEQARwByAG8AdQBwAE0AZQBtAGIAZQByACAAIgBkAG8AbQBhAGkAbgAgAGEAZABtAGkAbgBzACIAIAAtAFIAZQBjAHUAcgBzAGkAdgBlACAAfAAgAEcAZQB0AC0AQQBEAFUAcwBlAHIAIAAtAHAAcgAgACoAIAB8ACAAcwBlAGwAZQBjAHQAIABuAGEAbQBlACwAZABlAHMAYwByAGkAcAB0AGkAbwBuACwAbABhAHMAdABsAG8AZwBvAG4AZABhAHQAZQAgAHwAIABzAG8AcgB0AA==

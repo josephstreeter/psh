@@ -1,0 +1,7 @@
+Get-ADDomainController -filter * | % {
+   Write-Host "Replicating $($_.Name)"
+   $null = repadmin /kcc $_.Name
+   $null = repadmin /syncall /A /e $_.Name}
+Write-Host "Completed replication"
+
+http://helpdeskonfire.blogspot.com/2013/08/active-directory-replication-delay.html

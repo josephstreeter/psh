@@ -1,0 +1,9 @@
+if (get-module -list activedirectory) {
+    if (get-module activedirectory) {
+        Write-Host -ForegroundColor Green "AD Module loaded"
+        } Else {
+        Import-Module activedirectory
+        }    
+    } Else {
+    Write-Host -ForegroundColor Red "Active Directory Module not available"
+    } 

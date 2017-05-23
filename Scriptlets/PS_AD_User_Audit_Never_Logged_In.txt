@@ -1,0 +1,1 @@
+get-aduser -f {-not (lastlogontimestamp -like "*")} -pr lastlogontimestamp, created -searchbase 'ou=orgUnits,dc=ad,dc=wisc,dc=edu' | ft Name,enabled,lastlogontimestamp,created -auto

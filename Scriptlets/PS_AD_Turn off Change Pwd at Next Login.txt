@@ -1,0 +1,3 @@
+import-module activedirectory
+$admins = "sjkohlbe","jfortune","estraava","ctcudd"
+$admins | % {get-aduser $_ | set-aduser -changepasswordatlogon $False}

@@ -1,0 +1,4 @@
+get-aduser -f * -searchbase "ou=users,ou=netid,ou=id,dc=ds,dc=wisc,dc=edu" | %{$newupn = $_.samaccountname + "@wisc.edu"; set-aduser $_.samaccountname -userprincipalname $Newupn}
+
+get-aduser -f {userprincipalname -like "*@wisc.edu"} -searchbase "ou=users,ou=netid,ou=id,dc=ds,dc=wisc,dc=edu" | %{$newupn = $_.samaccountname + "@wisctest.wisc.edu"; set-aduser $_.samaccountname -userprincipalname $Newupn}
+

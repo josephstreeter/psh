@@ -1,0 +1,18 @@
+import-module grouppolicy
+
+$GPOs = Get-GPO -All
+ foreach ($gpo in $GPOs)
+ {
+  #$gpo.DisplayName
+  [xml]$report = Get-GPOReport -Name $gpo.DisplayName -ReportType Xml
+  If ($report.GPO.LinksTo -eq $null)
+  {
+   $gpo.DisplayName
+   $orphan = "Orphaned-" + $gpo.DisplayName
+   #$gpo.GpoStatus = "AllSettingsDisabled"
+   Rename-GPO -name $gpo.displayname -TargetName $orphan
+  }
+ }
+
+
+

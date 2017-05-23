@@ -1,0 +1,27 @@
+Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,dc=ad,dc=wisc,dc=edu" -pr * | fl *
+
+(Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,dc=adtest,dc=wisc,dc=edu" -pr dSHeuristics).dSHeuristics
+
+If (((Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,dc=ad,dc=wisc,dc=edu" -pr dSHeuristics).dSHeuristics) = 001000001) {"Good"} Else {"Bad"}
+
+http://msdn.microsoft.com/en-us/library/windows/desktop/ms675656(v=vs.85).aspx
+http://msdn.microsoft.com/en-us/library/cc223248.aspx
+http://msdn.microsoft.com/en-us/library/cc223249.aspx
+http://us.generation-nt.com/answer/difference-between-userpassword-unicodepwd-help-64806982.html
+
+PS C:\Users\jstreeter> (Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,dc=ds,dc=wisc,dc=edu" -pr dSHeuristics).dSHeuristics
+0010000
+
+PS C:\Users\jstreeter-ad> (Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,dc=adtest,dc=wisc,dc=edu" -pr dSHeuristics).dSHeuristics
+001000001
+
+PS C:\Users\jstreeter-ad> (Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,dc=ad,dc=wisc,dc=edu" -pr dSHeuristics).dSHeuristics
+001000001
+
+
+(Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,$((get-addomain).distinguishedname)" -pr dSHeuristics).dSHeuristics
+
+
+$dsh = (Get-ADObject -identity "cn=Directory Service,cn=Windows NT,cn=Services,cn=Configuration,$((get-addomain).distinguishedname)" -pr dSHeuristics).dSHeuristics
+If ($dsh[2] -eq "1") {Write-Host "List object mode is enabled"} Else {"List object mode is disabled"}
+If ($dsh[6] -eq "1") {Write-Host "Anonymous access is enabled"} Else {"Anonymous access is disabled"}

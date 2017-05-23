@@ -1,0 +1,19 @@
+$Reg = "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Diagnostics"
+Get-ItemProperty -Path $Reg
+
+$Reg = "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Diagnostics"
+Set-ItemProperty -Path $Reg -Name <service> -Type DWORD -Value <value>
+
+
+
+New-ItemProperty -Path hklm:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\ -Name DBFlag -Type DWORD -Value 545325055
+
+Set-ItemProperty -Path hklm:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\ -Name DBFlag -Type DWORD -Value 545325055
+Set-ItemProperty -Path hklm:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\ -Name DBFlag -Type DWORD -Value 0
+
+
+Restart-Service netlogon
+
+
+Get-Content -Path "C:\windows\debug\netlogon.log" -wait
+Get-Content -Path "C:\windows\debug\netlogon.log" -wait | where {$_ -like "*CRITICAL*"}

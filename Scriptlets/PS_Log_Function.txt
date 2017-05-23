@@ -1,0 +1,16 @@
+    $Global:date = get-date -uformat "%Y-%m-%d"
+    $Global:FilePath = "C:\Scripts"
+    $Global:Logfile = $FilePath + "\"+$date+"-logfile.txt"
+
+    Function Log($EntryType,$Entry)
+        {
+        $datetime = get-date -uformat "%Y-%m-%d-%H:%m:%S"
+        if (get-item $Logfile -ea 0)
+            {
+            $DateTime+"-"+$EntryType+"-"+$Entry | Out-File $Logfile -Append
+            }
+        Else
+            {
+            $DateTime+"-"+$EntryType+"-"+$Entry | Out-File $Logfile
+            }
+        }

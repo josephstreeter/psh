@@ -1,0 +1,5 @@
+Search-ADAccount -PasswordExpired -SearchBase "ou=dept admin,ou=ent,dc=ad,dc=wisc,dc=edu" | FT Name,ObjectClass -A
+
+Search-ADAccount -AccountExpiring -TimeSpan 14.00:00:00 -SearchBase "ou=dept admin,ou=ent,dc=ad,dc=wisc,dc=edu" | FT Name,ObjectClass -A
+
+Search-ADAccount -AccountInactive -TimeSpan 14.00:00:00 -SearchBase "ou=dept admin,ou=ent,dc=ad,dc=wisc,dc=edu" | FT Name,EMail -A

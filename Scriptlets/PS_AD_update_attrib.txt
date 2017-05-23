@@ -1,0 +1,1 @@
+Get-ADUser -f * -pr employeeType -searchbase "ou=users-test,OU=netid,dc=ds,dc=wisc,dc=edu" | foreach-object {Set-ADUser -Identity $_.name -replace @{comment="EMPLOYEE"}}

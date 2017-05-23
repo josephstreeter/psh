@@ -1,0 +1,7 @@
+$ip = $i = $a = $b = $s = 0
+
+$ip = Get-Content .\2012-12-03-08-Events-DS-Report.log | Select-String -pattern ‘\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b’
+ForEach ($i in $ip) {[string] $s = $i; $a = $s.split(":"); [array] $b = $b + $a[0]}
+
+($b | group | sort -descending count, name).count
+$b | group | sort -descending count, name | ft count, name -auto

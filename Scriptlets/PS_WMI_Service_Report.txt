@@ -1,0 +1,54 @@
+Function Get-ServiceStartName()
+    {
+    Param([string]$ComputerName=".")
+    $Results=get-wmiobject win32_service -ComputerName $ComputerName | select name,startmode,state,startname
+    return $Results
+    }
+
+Function Query-SQL($Query)
+    {
+    $dataSource = "server.domain.tld\instance"
+    $SQLuser = "user"
+    $SQLpwd = "password"
+    $database = "database"
+
+    $connection = New-Object System.Data.SqlClient.SqlConnection
+    $connectionString = "Server=$dataSource;uid=$SQLuser;pwd=$SQLpwd;Database=$database;Integrated Security=true;"
+    $connection.ConnectionString = $connectionString
+    $connection.Open()
+    
+    $command = $connection.CreateCommand()
+    $command.CommandText = $query
+    $result = $command.ExecuteReader()
+    $SQLTable = new-object "System.Data.DataTable"
+    $SQLTable.Load($result)
+    $connection.Close()
+
+    Return $SQLTable
+    }
+
+Query-SQL "SELECT * FROM Identities WHERE $Attrib = '$Value'"
+
+$DCs = Get-ADDomainController -filter *
+$Srv=@()
+foreach ($DC in $DCs)
+    {
+    $Services=Get-ServiceStartName -ComputerName $DC.hostname # | Group Startname -NoElement | Sort Count
+    foreach ($Service in $Services)
+        {
+        $srv+=New-Object psobject -Property @{
+                                            "Host"=$DC.HostName
+                                            "Name"=$Service.name
+                                            "StartMode"=$Service.startmode
+                                            "State"=$Service.state
+                                            "Account"=$Service.startname
+                                            }
+        }
+    }
+
+foreach ($entry in $srv)
+    {
+    Query-SQL "INSERT INTO dbo.Services $($entry.host),$($entry.name),$($entry.startmode),$($entry.state),$($entry.Account) Host,Name.startmode,state,account"
+    }
+
+$srv | ft host,name,startmode,state,account

@@ -1,0 +1,11 @@
+$CADS = "CADSDC-CSSC-01,192.168.0.1", "CADSDC-CSSC-02,192.168.0.2", "CADSDC-CSSC-03,192.168.0.3", "CADSDC-WARF-01,192.168.0.4", "CADSDC-WARF-02,192.168.0.5", "CADSDC-WARF-03,192.168.0.6"
+$CUSTOMER = "DC1,172.16.10.10", "DC2,172.16.10.11", "DC3,172.16.10.12"
+
+"netsh ipsec static add policy name='AD Trusts' description='AD Forest Trust traffic' mmpfs='no' mmlifetime='10' activatedefaultrule='no' pollinginterval='5' assign=no mmsec='3DES-SHA1-2'" | out-file C:\Scripts\netsh-ipsec.txt
+
+"netsh ipsec static add filteraction name='ESP-3DES-SHA1-0-3600' description='Require ESP 3DES/SHA1, no inbound clear, no fallback to clear, No PFS' qmpfs=no inpass=no soft=no action=negotiate qmsecmethods='ESP[3DES,SHA1]:3600s'" | out-file -append C:\Scripts\netsh-ipsec.txt
+"netsh ipsec static add filterlist 'Domain Controllers'" | out-file -append C:\Scripts\netsh-ipsec.txt
+
+foreach ($CADSDC in $CADS) {foreach ($CUSTOMERDC in $CUSTOMER){"netsh ipsec static add filter filterlist='Domain Controllers' description='"+$CADSDC.split(",")[0]+" - "+$CUSTOMERDC.split(",")[0]+"' srcaddr="+$CADSDC.split(",")[1]+" dstaddr="+$CUSTOMERDC.split(",")[1] | out-file -append C:\Scripts\netsh-ipsec.txt}}
+
+"netsh ipsec static add rule name='DC1 - DC2' policy='AD Trusts' filterlist='Domain Controllers' filteraction='ESP-3DES-SHA1-0-3600' kerberos='no' psk='my complex password'" | out-file -append C:\Scripts\netsh-ipsec.txt

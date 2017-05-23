@@ -1,0 +1,22 @@
+$PropArray = @()
+foreach ($item in $items)
+    {
+    $Prop = New-Object System.Object
+    $Prop | Add-Member -type NoteProperty -name prop1 -value $item.prop1
+    $Prop | Add-Member -type NoteProperty -name prop2 -value $item.prop2
+    $Prop | Add-Member -type NoteProperty -name prop3 -value $item.prop3
+    $PropArray += $Prop
+    }
+$PropArray | ft
+
+
+$PropArray = @()
+foreach ($item in $items)
+    {
+    $PropArray += New-object PSObject -Property @{
+	"prop1" = $item.prop1
+        "prop2" = $item.prop2
+        "prop3" = $item.prop3
+        }
+    }
+$PropArray | ft

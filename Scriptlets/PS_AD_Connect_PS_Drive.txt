@@ -1,0 +1,26 @@
+Import-Module activedirectory
+
+Function Connect-AD($Name,$Username,$Domain)
+	{
+	if (-not (get-psdrive "$Name" -ea silentlycontinue)) 
+	    {
+	    New-PSDrive `
+	        –Name $Name `
+	        -Server "$Domain" `
+	        –PSProvider ActiveDirectory `
+	        -Credential $(Get-Credential $Username) `
+	        -Root "//RootDSE/" `
+	        -Scope Global
+	    }
+	    Else
+	    {
+	    Write-Host -ForegroundColor Green "$Domain already exists"
+	    }
+	}
+
+Connect-AD "test" "first.last@domain.tld" "domain.tld"
+
+Connect-AD `
+	$($Name = Read-Host "Enter PS Drive Name") `
+	$($UserName=Read-Host "Enter UNC or UPN formated User Name") `
+	$($Domain=Read-Host "Enter the FQDN of the domain to connect to")

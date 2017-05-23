@@ -1,0 +1,5 @@
+Not logged in for 365 days
+Get-ADUser -f * -pr * -searchbase "ou=ou-admins,ou=adminaccounts,ou=managedomain,dc=ad,dc=wisc,dc=edu" | ? {($_.lastlogondate -lt (get-date).adddays(-365)) -and ($_.lastlogondate -ne $NULL)} | sort lastlogondate| ft name, lastlogondate, description -auto
+
+Match -OU accounts to NetIDs
+(Get-ADUser -f * -searchbase "ou=users,ou=dept admin,ou=ent,dc=ad,dc=wisc,dc=edu").name | % {$_.split("-")[0]} | get-aduser -pr office| select name, office | sort office | ft -auto

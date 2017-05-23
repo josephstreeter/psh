@@ -1,0 +1,9 @@
+Get-GPO -All | ?{$_.DisplayName -like "*INFOLAB*"} | %{Set-GPPermissions -guid $_.ID -targettype Group -TargetName "ad\infolabs-policy admins-gs" -PermissionLevel GpoEditDeleteModifySecurity}
+
+get-gpo -all | %{if ($_.displayname -like "basc*") {$_.displayname;Set-GPPermission -name $_.displayname -PermissionLevel GpoEditDeleteModifySecurity -TargetName rads-admgmt-group -targettype group -ea silentlycontinue}}
+
+Get-GPO -All | ?{$_.DisplayName -like "cd-*"} | %{Set-GPPermissions -guid $_.ID -targettype Group -TargetName "ad\CSD-OU Owners-gs" -PermissionLevel GpoEditDeleteModifySecurity}
+
+Get-GPO -All | ?{($_.displayname -like "DEM*") -or ($_.displayname -like "EM*")} | %{Set-GPPermissions -guid $_.ID -targettype Group -TargetName "ad\dmoe-ou" -PermissionLevel none}
+
+Get-GPO -All | ?{($_.displayname -like "DEM*") -or ($_.displayname -like "EM*")} | %{Set-GPPermissions -guid $_.ID -targettype Group -TargetName "ad\DEM-OU Owners-gs" -PermissionLevel GpoEditDeleteModifySecurity}

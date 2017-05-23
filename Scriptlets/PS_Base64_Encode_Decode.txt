@@ -1,0 +1,20 @@
+Function Encode-Base64($textIn) 
+    {
+    $b  = [System.Text.Encoding]::UTF8.GetBytes("Hello World")
+    $encoded = [System.Convert]::ToBase64String($b)
+    return $encoded    
+    }
+
+Function Decode-Base64($textBase64In) 
+    {
+    $b  = [System.Convert]::FromBase64String($textBase64In)
+    $decoded = [System.Text.Encoding]::UTF8.GetString($b)
+    return $decoded
+    }
+
+#Test Logic 
+$base64Encoded = Base64Encode("Hello World") 
+Write-Host "`$base64Encoded=$base64Encoded"
+
+$base64Decoded = Base64Decode($base64Encoded) 
+Write-Host "`$base64Decoded=$base64Decoded"
