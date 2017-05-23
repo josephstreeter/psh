@@ -1,0 +1,1 @@
+﻿Get-WmiObject -Query 'select * from Win32_QuickFixEngineering' | where {$_.HotFixID -eq 'KB2621440'}

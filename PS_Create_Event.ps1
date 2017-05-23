@@ -1,0 +1,1 @@
+﻿eventcreate /T INFORMATION /SO SomeApplication /ID 1000 /L APPLICATION /D "<Params><Timestamp>2011-08-29T21:24:03Z</Timestamp><InputFile>$(get-date)</InputFile><Result>Success</Result></Params>"

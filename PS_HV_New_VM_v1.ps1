@@ -1,0 +1,107 @@
+﻿$Name = Read-Host "Enter VM name"
+$Computer = Read-Host "Enter Hyper-V Host [default = localhost]"
+$OS = Read-Host "Enter OS (Centos, Debian, or Windows)"
+$Memory = Read-Host "Enter amount of memory [default = 512MB]"
+$Storage = Read-Host "Enter amount of disk space [default = 40GB]"
+$Network = Read-Host "Enter network (External or Private)[default = External]"
+
+if (-not($OS)) {
+    Write-Host -ForegroundColor Red "Must provide a name"
+    Exit
+    }Else{
+    $VMName = $Name
+    }
+
+if (-not($OS)) {
+    Write-Host -ForegroundColor Red "Must provide an OS (CentOS, Debian, or Windows)"
+    Exit
+    }ElseIf ($OS -eq "CentOS") {
+    $VMIso = "C:\VMs\ISO\CentOS-6.4-x86_64-minimal.iso"
+    }ElseIf ($OS -eq "Debian") {
+    $VMIso = "C:\VMs\ISO\debian-7.4.0-amd64-netinst.iso"
+    }Elseif ($OS -eq "Windows") {
+    $VMIso = "C:\VMs\ISO\9600.16384.WINBLUE_RTM.130821-1623_X64FRE_SERVER_EVAL_EN-US-IRM_SSS_X64FREE_EN-US_DV5.ISO"
+    }Else{
+    Write-Host -ForegroundColor Red "OS must be Linux or Windows"
+    Exit
+    }
+
+if (!($Computer)) {
+    $VMHost = $(gwmi win32_computersystem).name
+    }Else{
+    $VMHost = $Computer
+    }
+
+if (!($Storage)) {
+    $VHDSize = 40GB
+    }Else{
+    $VHDSize = $Storage
+    }
+
+If (!($Memory)) {
+    $VMMemory = 512MB
+    }Else{
+    $VMMemory = $Memory
+    }
+
+If (!($Network)) {
+    [string]$VMSwitch = "External"
+    }Else{
+    $VMSwitch = $Network
+    }
+
+if (!(Get-VMSwitch -computer $VMHost $VMSwitch -ea SilentlyContinue)) {
+    Write-Host -ForegroundColor Red "$VMSwitch doesn't exist"
+    Exit
+    }
+
+ if (!(get-item $VMIso -ea SilentlyContinue)) {
+    Write-Host -ForegroundColor Red "$VMIso doesn't exists"
+    Exit
+    }
+
+ if (get-vm $VMName -ea SilentlyContinue) {
+    Write-Host -ForegroundColor Red "VM already exists"
+    Exit
+    }
+
+ if (get-item "C:\Users\Public\Documents\Hyper-V\$VMName\Harddrive$VMName.vhdx" -ea SilentlyContinue) {
+    Write-Host -ForegroundColor Red "VHD already exists"
+    Exit
+    }
+
+Try {
+    New-VM `
+        -Name $VMName `
+        -MemoryStartupBytes $VMMemory `
+        -ComputerName $VMHost `
+        -NewVHDSizeBytes $VHDSize `
+        -Path "C:\Users\Public\Documents\Hyper-V" `
+        -NewVHDPath "C:\Users\Public\Documents\Hyper-V\$VMName\Harddrive$VMName.vhdx" `
+        -ea Stop
+        }
+Catch {
+    $error[0]
+    Exit
+    }
+
+Try {
+    Set-VMDvdDrive -VMName $VMName -Path $VMIso -ea Stop
+    }
+Catch {
+    $error[0]
+    Exit
+    }
+
+If ($OS -eq "Linux"){
+    Try {
+        Get-VMNetworkAdapter $VMName -ea Stop | ? {$_.islegacy -eq $false} | Remove-VMNetworkAdapter
+        Add-VMNetworkAdapter -VMName $VMName -SwitchName $VMSwitch -IsLegacy $true -ea Stop
+        }
+    Catch {
+        $error[0]
+        Exit
+        }
+}Else{
+    Get-VMNetworkAdapter $VMName -ea Stop | Connect-VMNetworkAdapter -switchname $VMSwitch
+    }

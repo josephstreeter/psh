@@ -1,0 +1,25 @@
+﻿$Scopes = netsh dhcp server 10.39.0.119 show scope
+$LeaseReport = @()
+foreach ($Scope in $Scopes)
+    {
+    $Leases = (netsh dhcp server 10.39.0.119 scope $Scope.split("-")[0].trim() show clients 1) | Select-String "-D-" 
+    
+    foreach ($Lease in $Leases) 
+        {
+        If ($Lease -notmatch "NEVER EXPIRES")
+            {
+            $Info = New-Object -type System.Object
+            $Hostname = $Lease.tostring().replace("-D-",";").Split(";").Trim()
+            $Info | Add-Member -MemberType NoteProperty -name Hostname -Value $Hostname[1]
+            $IP = $Hostname[0].replace(" - ",";").Split(";")
+            $Info | Add-Member -MemberType NoteProperty -name Scope -Value $Scope.split("-")[0].trim()
+            $Info | Add-Member -MemberType NoteProperty -name IPAddress -Value $IP[0]
+            $Info | Add-Member -MemberType NoteProperty -name SubnetMask -Value $IP[1]
+            $Info | Add-Member -MemberType NoteProperty -name MACAddress -Value $IP[2].replace(" -",";").Split(";")[0].Trim()
+            $LeaseReport += $Info
+            }
+        }
+
+    }
+$LeaseReport | ft -AutoSize
+

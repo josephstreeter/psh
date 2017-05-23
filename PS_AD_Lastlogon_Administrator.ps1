@@ -1,0 +1,2 @@
+﻿$date = (Get-Date).addmonths(-6)
+Get-ADUser -filter {(LastLogonDate -lt $date) -and (enabled -eq 'True')} -SearchBase 'OU=AdminAccounts,OU=ManageDomain,DC=ad,DC=wisc,DC=edu' -Properties * | ft sn, givenname, name, LastLogonDate, created, enabled, mail -AutoSize
